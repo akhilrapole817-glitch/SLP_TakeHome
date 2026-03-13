@@ -1,6 +1,6 @@
-# 🚗 Vehicle Defect Intelligence MVP
+# Vehicle Defect Intelligence MVP
 
-Hey there! 👋 Welcome to the **Vehicle Defect Intelligence Tool**, an MVP built for SimpleLegal Partners (SLP). 
+Hey there! Welcome to the **Vehicle Defect Intelligence Tool**, an MVP built for Strategic Legal Practices (SLP). 
 
 I built this prototype to help legal teams (like Intake Coordinators and Case Attorneys) instantly assess the viability of automotive defect cases. Instead of trawling through scattered NHTSA databases, this tool takes a VIN or Make/Model/Year and instantly surfaces live recall data, visualizes historical complaint trends, and plots geographic defect clusters. 
 
@@ -8,7 +8,7 @@ Whether an attorney needs to know if a specific "transmission slipping" issue is
 
 ---
 
-## 🏗️ Architecture Design
+##  Architecture Design
 
 I went with a decoupled, modern web architecture for this MVP to ensure it's fast, scalable, and easy to iterate on.
 
@@ -24,7 +24,7 @@ I went with a decoupled, modern web architecture for this MVP to ensure it's fas
 
 ---
 
-## 🛠️ Setup & Running Locally
+##  Setup & Running Locally
 
 Because I configured the backend to use SQLite by default, getting this running on your machine is a breeze.
 
@@ -50,16 +50,15 @@ npm run dev   # Start the Next.js dev server
 
 ---
 
-## 🤖 AI Tools Used
+##  AI Tools Used
 
-I leveraged AI to accelerate the boilerplate and data munging phases of this MVP, acting as an advanced pair-programmer:
+I used Anthropic Claude 3.5 Sonnet and Gemini selectively to speed up some initial scaffolding, including parts of the Next.js layout and FastAPI route structure. I also used AI assistance while working through some of the NHTSA JSON parsing, mainly to explore ways to flatten inconsistent nested payloads more efficiently. All final schema design, integration logic, and application behavior were reviewed, adapted, and implemented by me based on the needs of the project.
 
-*   **Anthropic Claude 3.5 Sonnet & Gemini**: Used primarily for structuring the initial Next.js layout and FastAPI routing syntax. When integrating the NHTSA APIs, the JSON payloads can be deeply nested and inconsistent; I used AI to help write the Python parsing logic that flattens this data clearly into our Pydantic schemas. 
-*   **Tailwind / UI Generation**: Instead of manually writing flexbox containers and padding for every dashboard card, I used AI to quickly generate the responsive `grid` layouts and Chart.js wrapper components, allowing me to focus on the actual business logic and data flow.
+For the UI, I used AI to accelerate a few responsive layout ideas and component structure suggestions, which helped reduce time spent on repetitive styling. I then refined those outputs and connected them to the actual business logic, data handling, and user flow myself.
 
 ---
 
-## ⚖️ Tradeoffs & Assumptions
+##  Tradeoffs & Assumptions
 
 When building a 48-hour MVP, you have to draw lines in the sand. Here are my structural tradeoffs:
 
@@ -69,7 +68,7 @@ When building a 48-hour MVP, you have to draw lines in the sand. Here are my str
 
 ---
 
-## 🚀 Future Extensions (With Another Week)
+##  Future Extensions (With Another Week)
 
 If I had another week to take this from MVP to a production-ready V1, here is exactly what I would build:
 
