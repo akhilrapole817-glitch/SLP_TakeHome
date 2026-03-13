@@ -1,0 +1,32 @@
+services:
+  # -------------------------
+  # BACKEND SERVICE
+  # -------------------------
+  - type: web
+    name: slp-backend
+    env: python
+    rootDir: backend
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+  # -------------------------
+  # FRONTEND SERVICE
+  # -------------------------
+  - type: web
+    name: slp-frontend
+    env: node
+    rootDir: frontend
+    buildCommand: "npm install && npm run build"
+    startCommand: "npm run start"
+    envVars:
+      - key: NODE_VERSION
+        value: 20.0.0
+      # Dynamically inject the backend's live URL into the frontend
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: slp-backend
+          envVarKey: RENDER_EXTERNAL_URL
