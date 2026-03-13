@@ -8,6 +8,14 @@ Whether an attorney needs to know if a specific "transmission slipping" issue is
 
 ---
 
+## Live Demo
+
+A live version of the application is available here:
+
+[Vehicle Defect Intelligence MVP](https://akhil-slp-mvp.netlify.app/)
+
+---
+
 ##  Architecture Design
 
 I went with a decoupled, modern web architecture for this MVP to ensure it's fast, scalable, and easy to iterate on.
@@ -60,9 +68,9 @@ For the UI, I used AI to accelerate a few responsive layout ideas and component 
 
 ##  Tradeoffs & Assumptions
 
-When building a 48-hour MVP, you have to draw lines in the sand. Here are my structural tradeoffs:
+When building a 8-hour MVP, you have to draw lines in the sand. Here are my structural tradeoffs:
 
-1.  **SQLite vs. PostgreSQL**: As mentioned, the architecture is designed for Postgres, but I shipped it with SQLite. *Assumption*: Reviewers want a frictionless friction tool that runs instantly on `git clone`. For production, this is a 1-line environment variable change to point to a managed Postgres DB.
+1.  **SQLite vs. PostgreSQL**: As mentioned, the architecture is designed for Postgres, but I shipped it with SQLite. *Assumption*: For an MVP, I assumed reviewers would prefer a tool that runs locally with minimal setup right after cloning the repository. For production, this is a 1-line environment variable change to point to a managed Postgres DB.
 2.  **Caching Strategy (or lack thereof)**: Right now, if you search for a car, the backend fetches the data from the NHTSA and stores it in the DB. Future identical searches load instantly from the DB. *Tradeoff*: I did not implement a Time-To-Live (TTL) or cache invalidation strategy for this MVP. Over time, recall data changes, so a production app would need background jobs to refresh stale database rows.
 3.  **Basic Keyword Search**: The symptom search in the Complaints table uses basic string matching (`ILIKE`). It works well enough for an MVP, but it lacks semantic understanding (e.g., searching "engine fire" won't automatically find "combustion under hood").
 
