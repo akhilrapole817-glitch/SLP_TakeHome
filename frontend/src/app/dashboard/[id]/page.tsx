@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useRef, useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import { getDashboardData, getComplaints, getRecalls } from "@/services/api";
+import { getDashboardData, getComplaints, getRecalls, getSemanticSearchComplaints } from "@/services/api";
 import SeverityCards from "@/components/SeverityCards";
 import { DefectPatternChart, TrendChart } from "@/components/Charts";
 import { MapChart } from "@/components/MapChart";
@@ -19,6 +19,10 @@ export default function Dashboard({ params }: { params: Promise<{ id: string }> 
   const [complaints, setComplaints] = useState<any[]>([]);
   const [complaintsLoading, setComplaintsLoading] = useState(false);
   const [recalls, setRecalls] = useState<any[]>([]);
+  
+  // Ref for the main report container
+  const reportRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -51,13 +55,22 @@ export default function Dashboard({ params }: { params: Promise<{ id: string }> 
   const handleSymptomSearch = async (symptom: string) => {
     try {
       setComplaintsLoading(true);
-      const data = await getComplaints(Number(id), symptom);
+      // Use semantic search for user queries - understands meaning not just keywords
+      const data = symptom
+        ? await getSemanticSearchComplaints(Number(id), symptom)
+        : await getComplaints(Number(id));
       setComplaints(data);
     } catch (err) {
       console.error("Failed to search complaints", err);
     } finally {
       setComplaintsLoading(false);
     }
+  };
+
+  const exportToPDF = () => {
+    // We use the native browser print functionality.
+    // CSS media queries (@media print) in index.css will format the page for PDF export.
+    window.print();
   };
 
   if (loading) {
@@ -82,6 +95,33 @@ export default function Dashboard({ params }: { params: Promise<{ id: string }> 
 
   const vehicle = dashboardData.vehicle;
 
+  const getCaseStrength = () => {
+    const { total_complaints, total_crashes, total_fires, total_injuries } = dashboardData.severity;
+    const activeRecalls = recalls.length;
+    
+    if (total_crashes > 0 && activeRecalls > 0) {
+      return {
+        label: "Strong Case Signal",
+        color: "bg-red-50 border-red-200 text-red-900 border",
+        description: "Multiple crash-related complaints and an active recall strengthen the pattern."
+      };
+    } else if (total_complaints > 10 || activeRecalls > 0 || total_crashes > 0 || total_fires > 0 || total_injuries > 0) {
+      return {
+        label: "Moderate Case Signal",
+        color: "bg-orange-50 border-orange-200 text-orange-900 border",
+        description: "This vehicle shows a moderate defect signal based on complaint volume and repeated incident reports."
+      };
+    } else {
+      return {
+        label: "Limited Case Signal",
+        color: "bg-slate-100 border-slate-200 text-slate-800 border",
+        description: "The available complaint history appears limited and may require more supporting evidence."
+      };
+    }
+  };
+
+  const caseStrength = getCaseStrength();
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-12">
       {/* Header */}
@@ -90,7 +130,7 @@ export default function Dashboard({ params }: { params: Promise<{ id: string }> 
           <div className="flex items-center gap-4">
             <button 
               onClick={() => router.push('/')}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+              className="no-print p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
@@ -99,19 +139,32 @@ export default function Dashboard({ params }: { params: Promise<{ id: string }> 
                 {vehicle.year} {vehicle.make} {vehicle.model}
               </h1>
               <p className="text-sm text-slate-500 font-medium">
-                {vehicle.vin ? `VIN: ${vehicle.vin}` : 'General Vehicle Query'}
+                {vehicle.vin ? `VIN: ${vehicle.vin}` : 'General Make/Model Query'}
               </p>
             </div>
           </div>
-          <button className="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors">
-            <FileDown className="w-4 h-4" /> Export Report
+          <button 
+            onClick={exportToPDF}
+            disabled={isExporting}
+            className="no-print hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors disabled:opacity-50"
+          >
+            {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />} 
+            {isExporting ? 'Generating...' : 'Export Report'}
           </button>
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <main ref={reportRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 bg-slate-50">
+        {/* Case Strength Summary */}
         <section>
-          <h2 className="text-xl font-bold text-slate-800 mb-4">Safety Severity Indicators</h2>
+          <div className={`p-5 rounded-xl ${caseStrength.color}`}>
+             <h2 className="font-bold text-lg mb-1">{caseStrength.label}</h2>
+             <p className="text-sm opacity-90 font-medium">{caseStrength.description}</p>
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-bold text-slate-800 mb-4">Incident Severity Indicators</h2>
           <SeverityCards {...dashboardData.severity} />
         </section>
 
@@ -126,6 +179,7 @@ export default function Dashboard({ params }: { params: Promise<{ id: string }> 
         </section>
 
         <section>
+          <h2 className="text-xl font-bold text-slate-800 mb-4">Complaint Distribution by State</h2>
           <MapChart data={dashboardData.state_distribution} />
         </section>
 

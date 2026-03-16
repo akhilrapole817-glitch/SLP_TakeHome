@@ -27,7 +27,7 @@ export function ComplaintsTable({ complaints, onSearch, loading }: { complaints:
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
       <div className="p-6 border-b border-slate-100 flex justify-between items-center sm:flex-row flex-col gap-4">
-        <h3 className="text-lg font-bold text-slate-800">Consumer Complaints</h3>
+        <h3 className="text-lg font-bold text-slate-800">Reported Consumer Complaints</h3>
         <form onSubmit={handleSearch} className="flex relative items-center max-w-md w-full">
           <input
             type="text"

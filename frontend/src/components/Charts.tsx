@@ -27,33 +27,39 @@ ChartJS.register(
 );
 
 export function DefectPatternChart({ data }: { data: { component: string, count: number }[] }) {
+  const topData = data.slice(0, 7);
   const chartData = {
-    labels: data.map(d => d.component.split(',')[0].slice(0, 20) + (d.component.length > 20 ? '...' : '')),
+    labels: topData.map(d => {
+      let name = d.component.split(',')[0].trim();
+      return name.length > 25 ? name.substring(0, 25).trim() + '...' : name;
+    }),
     datasets: [
       {
         label: 'Complaint Volume',
-        data: data.map(d => d.count),
+        data: topData.map(d => d.count),
         backgroundColor: 'rgba(79, 70, 229, 0.8)',
         borderRadius: 4,
+        barThickness: 24,
       },
     ],
   };
 
   const options = {
+    indexAxis: 'y' as const,
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
     },
     scales: {
-      y: { beginAtZero: true },
-      x: { ticks: { maxRotation: 45, minRotation: 45 } }
+      x: { beginAtZero: true },
+      y: { ticks: { autoSkip: false } }
     }
   };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col h-[400px]">
-      <h3 className="text-lg font-bold text-slate-800 mb-4">Top Failing Components</h3>
+      <h3 className="text-lg font-bold text-slate-800 mb-4">Most Reported Defect Components</h3>
       <div className="flex-1 min-h-0">
         <Bar data={chartData} options={options} />
       </div>
@@ -95,7 +101,7 @@ export function TrendChart({ data, componentOptions = [], selectedComponent = ""
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col h-[400px]">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-bold text-slate-800">Complaint Trends Over Time</h3>
+        <h3 className="text-lg font-bold text-slate-800">Complaint Volume Over Time</h3>
         {componentOptions.length > 0 && onComponentSelect && (
           <select 
             value={selectedComponent}

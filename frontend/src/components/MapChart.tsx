@@ -1,59 +1,114 @@
 "use client";
 
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
+import { useEffect } from "react";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+// State centroids (approximate lat/lng for each US state)
+const STATE_CENTROIDS: Record<string, [number, number]> = {
+  AL: [32.806671, -86.791130], AK: [61.370716, -152.404419], AZ: [33.729759, -111.431221],
+  AR: [34.969704, -92.373123], CA: [36.116203, -119.681564], CO: [39.059811, -105.311104],
+  CT: [41.597782, -72.755371], DE: [39.318523, -75.507141], FL: [27.766279, -81.686783],
+  GA: [33.040619, -83.643074], HI: [21.094318, -157.498337], ID: [44.240459, -114.478828],
+  IL: [40.349457, -88.986137], IN: [39.849426, -86.258278], IA: [42.011539, -93.210526],
+  KS: [38.526600, -96.726486], KY: [37.668140, -84.670067], LA: [31.169960, -91.867805],
+  ME: [44.693947, -69.381927], MD: [39.063946, -76.802101], MA: [42.230171, -71.530106],
+  MI: [43.326618, -84.536095], MN: [45.694454, -93.900192], MS: [32.741646, -89.678696],
+  MO: [38.456085, -92.288368], MT: [46.921925, -110.454353], NE: [41.125370, -98.268082],
+  NV: [38.313515, -117.055374], NH: [43.452492, -71.563896], NJ: [40.298904, -74.521011],
+  NM: [34.840515, -106.248482], NY: [42.165726, -74.948051], NC: [35.630066, -79.806419],
+  ND: [47.528912, -99.784012], OH: [40.388783, -82.764915], OK: [35.565342, -96.928917],
+  OR: [44.572021, -122.070938], PA: [40.590752, -77.209755], RI: [41.680893, -71.511780],
+  SC: [33.856892, -80.945007], SD: [44.299782, -99.438828], TN: [35.747845, -86.692345],
+  TX: [31.054487, -97.563461], UT: [40.150032, -111.862434], VT: [44.045876, -72.710686],
+  VA: [37.769337, -78.169968], WA: [47.400902, -121.490494], WV: [38.491226, -80.954453],
+  WI: [44.268543, -89.616508], WY: [42.755966, -107.302490], DC: [38.897438, -77.026817],
+};
 
-export function MapChart({ data }: { data: { state: string, count: number }[] }) {
-  // Filter out UNKNOWN or empty states and take the top 15 for readability
-  const filteredData = data.filter(d => d.state && d.state !== "UNKNOWN").slice(0, 15);
+export function MapChart({ data }: { data: { state: string; count: number }[] }) {
+  const validData = data.filter((d) => d.state && STATE_CENTROIDS[d.state.toUpperCase()]);
+  const maxCount = validData.length > 0 ? Math.max(...validData.map((d) => d.count)) : 1;
 
-  const chartData = {
-    labels: filteredData.map(d => d.state),
-    datasets: [
-      {
-        label: 'Complaints by State',
-        data: filteredData.map(d => d.count),
-        backgroundColor: 'rgba(16, 185, 129, 0.8)',
-        borderRadius: 4,
-      },
-    ],
-  };
+  useEffect(() => {
+    let map: any = null;
+    let L: any = null;
 
-  const options = {
-    indexAxis: 'y' as const,
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-    },
-    scales: {
-      x: { beginAtZero: true },
-    }
-  };
+    const initMap = async () => {
+      // Dynamically import leaflet to avoid SSR issues
+      L = (await import("leaflet")).default;
+      await import("leaflet/dist/leaflet.css");
+
+      const container = document.getElementById("complaint-map");
+      if (!container || container.getAttribute("data-initialized")) return;
+      container.setAttribute("data-initialized", "true");
+
+      map = L.map("complaint-map", { zoomControl: true, scrollWheelZoom: false }).setView(
+        [39.5, -98.35],
+        4
+      );
+
+      // Add a clean tile layer
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+        attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+        subdomains: "abcd",
+        maxZoom: 19,
+      }).addTo(map);
+
+      // Add a circle marker for each state proportional to complaint count
+      validData.forEach((d) => {
+        const coords = STATE_CENTROIDS[d.state.toUpperCase()];
+        if (!coords) return;
+
+        const intensity = d.count / maxCount;
+        const radius = 10 + intensity * 35; // 10px min, 45px max
+        const color = intensity > 0.66 ? "#dc2626" : intensity > 0.33 ? "#f97316" : "#6366f1";
+
+        L.circleMarker(coords, {
+          radius,
+          fillColor: color,
+          color: "#fff",
+          weight: 1.5,
+          opacity: 1,
+          fillOpacity: 0.75,
+        })
+          .addTo(map)
+          .bindPopup(
+            `<div style="font-family:sans-serif;"><strong>${d.state}</strong><br/>${d.count} complaint${d.count !== 1 ? "s" : ""}</div>`
+          );
+      });
+    };
+
+    initMap();
+
+    return () => {
+      // Cleanup on unmount
+      if (map) {
+        map.remove();
+        const container = document.getElementById("complaint-map");
+        if (container) container.removeAttribute("data-initialized");
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (validData.length === 0) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center justify-center h-[420px]">
+        <p className="text-slate-400 text-sm">No geographic data available.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col h-[400px]">
-      <h3 className="text-lg font-bold text-slate-800 mb-4">Geographic Distribution (Top 15 States)</h3>
-      <div className="flex-1 min-h-0">
-        <Bar data={chartData} options={options} />
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-slate-800">Geographic Complaint Distribution</h3>
+        <div className="flex items-center gap-3 text-xs text-slate-500">
+          <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-full bg-indigo-500"></span>Low</span>
+          <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-full bg-orange-500"></span>Medium</span>
+          <span className="flex items-center gap-1"><span className="inline-block w-3 h-3 rounded-full bg-red-600"></span>High</span>
+        </div>
       </div>
+      <div id="complaint-map" className="w-full rounded-lg overflow-hidden" style={{ height: "380px", zIndex: 0 }} />
+      <p className="text-xs text-slate-400 mt-2">Circle size and color indicate complaint density. Click a circle for details.</p>
     </div>
   );
 }

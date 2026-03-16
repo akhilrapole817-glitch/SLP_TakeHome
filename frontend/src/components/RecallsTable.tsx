@@ -36,36 +36,52 @@ export function RecallsTable({ recalls }: { recalls: Recall[] }) {
       <div className="divide-y divide-slate-100">
         {recalls.map((r, idx) => (
           <div key={idx} className="p-6 hover:bg-slate-50 transition-colors">
-            <div className="flex justify-between items-start mb-2">
-              <h4 className="font-semibold text-slate-800">{r.component}</h4>
-              <span className="text-sm font-medium px-2 py-1 bg-slate-100 text-slate-600 rounded-md">
-                Recall #{r.nhtsa_campaign_number}
-              </span>
-            </div>
-            
-            <div className="space-y-4 text-sm mt-4">
-              <div>
-                <span className="font-medium text-slate-700 block mb-1">Issue Description</span>
-                <p className="text-slate-600">{r.description || 'N/A'}</p>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              
+              {/* Left Column: Metadata */}
+              <div className="md:col-span-1 space-y-4">
+                <div>
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Affected Component</span>
+                  <h4 className="font-bold text-slate-800 text-sm">{r.component}</h4>
+                </div>
+                <div>
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Recall ID</span>
+                  <span className="text-sm font-medium px-2 py-1 bg-slate-100 border border-slate-200 text-slate-700 rounded-md inline-block">
+                    {r.nhtsa_campaign_number}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Date Issued</span>
+                  <span className="text-sm text-slate-700">
+                    {r.issue_date ? format(new Date(r.issue_date), 'MMM d, yyyy') : 'Unknown'}
+                  </span>
+                </div>
               </div>
-              {r.consequence && (
-                 <div>
-                   <span className="font-medium text-red-700 block mb-1">Safety Consequence</span>
-                   <p className="text-red-600">{r.consequence}</p>
-                 </div>
-              )}
-              {r.remedy && (
-                 <div>
-                   <span className="font-medium text-green-700 block mb-1">Remedy</span>
-                   <p className="text-green-700">{r.remedy}</p>
-                 </div>
-              )}
+              
+              {/* Right Column: Details */}
+              <div className="md:col-span-3 space-y-4 text-sm mt-4 md:mt-0">
+                <div>
+                  <span className="font-semibold text-slate-800 block mb-1">Issue Overview</span>
+                  <p className="text-slate-600 leading-relaxed">{r.description || 'N/A'}</p>
+                </div>
+                {r.consequence && (
+                   <div className="p-3 bg-red-50 border border-red-100 rounded-lg">
+                     <span className="font-semibold text-red-800 block mb-1">Safety Risk</span>
+                     <p className="text-red-700">{r.consequence}</p>
+                   </div>
+                )}
+                {r.remedy && (
+                   <div className="p-3 bg-emerald-50 border border-emerald-100 rounded-lg">
+                     <span className="font-semibold text-emerald-800 block mb-1">Manufacturer Remedy</span>
+                     <p className="text-emerald-700">{r.remedy}</p>
+                   </div>
+                )}
+              </div>
+              
             </div>
             
-            <div className="mt-4 text-xs text-slate-400 flex items-center">
-              <span>Manufacturer: {r.manufacturer || 'Unknown'}</span>
-              <span className="mx-2">•</span>
-              <span>Issued: {r.issue_date ? format(new Date(r.issue_date), 'MMMM d, yyyy') : 'Unknown'}</span>
+            <div className="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-400">
+              Manufacturer: {r.manufacturer || 'Unknown Manufacturer'}
             </div>
           </div>
         ))}

@@ -7,6 +7,7 @@ from ..models.database import get_db
 from ..models import models
 from ..schemas import schemas
 from ..services.nhtsa_service import NHTSAService
+from ..services.semantic_search import rank_by_similarity
 
 router = APIRouter()
 
@@ -159,6 +160,37 @@ def get_complaints(
     if symptom:
         query = query.filter(models.Complaint.description.ilike(f"%{symptom}%"))
     return query.order_by(models.Complaint.complaint_date.desc().nulls_last()).all()
+
+@router.get("/vehicle/{vehicle_id}/semantic-search", response_model=List[schemas.Complaint])
+def semantic_search_complaints(
+    vehicle_id: int,
+    symptom: str,
+    top_k: int = 50,
+    db: Session = Depends(get_db)
+):
+    """
+    Semantically searches complaints for a vehicle using sentence embeddings.
+    Finds complaints that are conceptually similar to the symptom query,
+    not just exact keyword matches.
+    """
+    all_complaints = db.query(models.Complaint).filter(
+        models.Complaint.vehicle_id == vehicle_id,
+        models.Complaint.description != None,
+        models.Complaint.description != ""
+    ).all()
+    
+    if not all_complaints:
+        return []
+    
+    # Build (id, description) pairs for ranking
+    candidates = [(c.id, c.description) for c in all_complaints if c.description]
+    
+    # Get ranked complaint IDs by semantic similarity
+    ranked_ids = rank_by_similarity(symptom, candidates, top_k=top_k)
+    
+    # Maintain the ranked order
+    id_to_complaint = {c.id: c for c in all_complaints}
+    return [id_to_complaint[cid] for cid in ranked_ids if cid in id_to_complaint]
 
 @router.get("/vehicle/{vehicle_id}/recalls", response_model=List[schemas.Recall])
 def get_recalls(vehicle_id: int, db: Session = Depends(get_db)):

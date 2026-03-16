@@ -17,7 +17,7 @@ export default function SeverityCards({ total_crashes, total_fires, total_injuri
           <FileWarning className="w-6 h-6" />
         </div>
         <div>
-          <p className="text-sm font-medium text-slate-500 text-slate-800">Total Complaints</p>
+          <p className="text-sm font-medium text-slate-500">Reported Complaints</p>
           <p className="text-2xl font-bold text-slate-800">{total_complaints.toLocaleString()}</p>
         </div>
       </div>

@@ -35,9 +35,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-indigo-50 to-blue-50 text-slate-900">
       <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-        <div className="p-8 pb-6 border-b border-slate-100 bg-indigo-600">
+        <div className="p-8 pb-6 border-b border-indigo-700 bg-indigo-600">
           <h1 className="text-2xl font-bold text-white mb-2">Vehicle Defect Intelligence Tool</h1>
-          <p className="text-indigo-100 text-sm">Quickly assess defect patterns and severity for legal intake.</p>
+          <p className="text-indigo-100 text-sm">Search by VIN or vehicle details to review recalls, complaints, severity indicators, and defect trends.</p>
         </div>
         
         <div className="p-8">
@@ -118,21 +118,40 @@ export default function Home() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg font-medium transition-all focus:ring-4 focus:ring-indigo-100 disabled:opacity-70 mt-2"
+              className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg font-medium transition-all focus:ring-4 focus:ring-indigo-100 disabled:opacity-70 mt-4"
             >
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Analyzing Vehicle Records...
+                  Generating Case Assessment...
                 </>
               ) : (
                 <>
                   <Search className="w-5 h-5" />
-                  Assess Defect Patterns
+                  Assess Vehicle History
                 </>
               )}
             </button>
           </form>
+
+          {/* Value Proposition Section */}
+          <div className="mt-8 pt-6 border-t border-slate-100">
+            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">Assessment Capabilities</h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-3">
+                <div className="mt-0.5 w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0"></div>
+                <span className="text-sm text-slate-600 font-medium">Review recalls and existing complaint history</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <div className="mt-0.5 w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0"></div>
+                <span className="text-sm text-slate-600 font-medium">Highlight severe incidents including crashes, fires, and injuries</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <div className="mt-0.5 w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0"></div>
+                <span className="text-sm text-slate-600 font-medium">Identify temporal trends and geographic defect patterns</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

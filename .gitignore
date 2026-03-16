@@ -6,3 +6,6 @@ backend/__pycache__/
 .env
 .DS_Store
 sql_app.db
+
+# Local Netlify folder
+.netlify

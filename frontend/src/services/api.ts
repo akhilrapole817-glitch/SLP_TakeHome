@@ -25,6 +25,11 @@ export const getComplaints = async (vehicleId: number, symptom: string = '') => 
   return response.data;
 };
 
+export const getSemanticSearchComplaints = async (vehicleId: number, query: string) => {
+  const response = await apiClient.get(`/vehicle/${vehicleId}/semantic-search`, { params: { symptom: query } });
+  return response.data;
+};
+
 export const getRecalls = async (vehicleId: number) => {
   const response = await apiClient.get(`/vehicle/${vehicleId}/recalls`);
   return response.data;
