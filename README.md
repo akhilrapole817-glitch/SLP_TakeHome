@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🚗 Vehicle Defect Intelligence
+#  Vehicle Defect Intelligence
 
-### A legal intelligence tool for automotive defect case evaluation — built for SimpleLegal Partners.
+### A legal intelligence tool for automotive defect case evaluation — built for Strategic Legal Partners.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-akhil--slp--mvp.netlify.app-6366f1?style=for-the-badge&logo=netlify)](https://akhil-slp-mvp.netlify.app/)
 [![API Docs](https://img.shields.io/badge/API%20Docs-Swagger%20UI-009688?style=for-the-badge&logo=fastapi)](https://slp-backend-8u7k.onrender.com/docs)
@@ -18,7 +18,7 @@ Intake coordinators and case attorneys at automotive defect law firms face a dai
 
 Enter a **VIN** or a **Make/Model/Year** and within seconds you get:
 
-- **Case Strength Signal** — a calculated verdict (Strong / Moderate / Limited) based on crash involvement, fire incidents, injuries, and active manufacturer recalls
+- **Case Strength Signal** — a rule-based indicator derived from complaint volume, severity markers, and recall presence
 - **Incident Severity Breakdown** — total complaints, crashes, fires, and injuries in card format
 - **Semantic Symptom Search** — search complaints using natural language (e.g. *"engine stalling at highway speeds"*) — the search understands *meaning*, not just keywords
 - **Defect Pattern Analysis** — bar chart of the top complaint components (Engine, Brakes, Steering, etc.)
@@ -132,7 +132,7 @@ Defaulting to SQLite means zero setup friction for a reviewer cloning the repo. 
 The first time a vehicle is searched, the backend makes live calls to the NHTSA API and caches results in the database. All subsequent searches for that vehicle are instant. A production system would pre-warm the cache with background jobs (Celery, etc.).
 
 **TF-IDF vs. Neural Embeddings**
-The symptom search uses scikit-learn's TF-IDF vectorizer with bigram support, which already dramatically outperforms naive string matching. A production V2 would use dense vector embeddings (e.g. `all-MiniLM-L6-v2`) stored in `pgvector` for fully semantic recall — but that requires 2GB of GPU dependencies unsuitable for a free-tier server.
+The symptom search uses scikit-learn's TF-IDF vectorizer with bigram support, which already dramatically outperforms naive string matching. A production V2 would use dense vector embeddings (e.g. `all-MiniLM-L6-v2`) stored in `pgvector` for fully semantic recall — Dense embedding-based search would improve semantic recall, but it adds additional infrastructure and dependency overhead that felt unnecessary for an 8-hour MVP.
 
 **No Cache Invalidation**
 Once complaint and recall data is cached to the DB, it doesn't automatically refresh. A production system would add TTL stamps and nightly refresh jobs to keep data current.
@@ -160,5 +160,5 @@ Once complaint and recall data is cached to the DB, it doesn't automatically ref
 ---
 
 <div align="center">
-Built for SimpleLegal Partners · View live at <a href="https://akhil-slp-mvp.netlify.app/">akhil-slp-mvp.netlify.app</a>
+Built for Strategic Legal Partners · View live at <a href="https://akhil-slp-mvp.netlify.app/">akhil-slp-mvp.netlify.app</a>
 </div>
