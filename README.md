@@ -116,17 +116,34 @@ Full interactive docs: [slp-backend-8u7k.onrender.com/docs](https://slp-backend-
 
 ---
 
+
 ## User Stories Covered
 
-| # | Story | Implementation |
+| # | User Story | How the MVP Addresses It |
 |---|---|---|
-| 1 | *Intake coordinator enters a VIN to assess case viability* | VIN decode via NHTSA → Case Strength card (Strong/Moderate/Limited) |
-| 2 | *Attorney searches complaints by symptom* | TF-IDF semantic search understands meaning, not just keywords |
-| 3 | *Attorney sees a geographic map of complaints* | Interactive Leaflet bubble map, color-coded by complaint density |
-| 4 | *Senior partner tracks complaint volume trends* | Year-over-year trend chart filterable by defect component |
-
+| 1 | As an intake coordinator, I want to enter a VIN and quickly determine whether a vehicle has known issues worth investigating. | The application supports VIN-based lookup, decodes vehicle details, and surfaces recalls, complaint volume, severity indicators, and an overall defect signal summary. |
+| 2 | As a case attorney, I want to search complaints by symptom description so I can find similar issues that support a client’s claim. | The complaint search supports similarity-based symptom matching using TF-IDF ranking, helping surface related complaints beyond exact keyword matches. |
+| 3 | As a case attorney, I want to see where complaints are coming from so I can identify whether a defect appears regional or widespread. | The dashboard includes an interactive geographic map showing complaint distribution by state, with visual clustering based on relative complaint volume. |
+| 4 | As a senior partner, I want to review complaint trends over time for specific vehicles and components so I can identify recurring or emerging defect patterns. | The dashboard includes year-over-year complaint trend analysis and a component-level defect breakdown to highlight recurring patterns over time. |
 ---
 
+## Acceptance Criteria
+
+The MVP is considered complete if it meets the following criteria:
+
+- A user can search by **VIN** or **Make / Model / Year**
+- The system returns relevant **vehicle details**, **NHTSA recalls**, and **consumer complaints**
+- The dashboard displays **complaint count**, **severity indicators**, and a **rule-based defect signal**
+- The system highlights the **most frequently reported complaint components**
+- A user can search complaints by **symptom description**
+- The system provides **similarity-based complaint matching** beyond exact keyword filtering
+- The dashboard shows **complaint trends over time**
+- The dashboard includes **geographic complaint distribution**
+- Recall data is displayed in a **structured and easy-to-scan format**
+- The application runs locally using the README setup steps
+- The hosted demo is accessible through the provided live link
+
+---
 ## Tradeoffs & Assumptions
 
 **SQLite vs. PostgreSQL**
