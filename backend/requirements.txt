@@ -8,3 +8,5 @@ requests
 httpx
 python-dotenv
 alembic
+sentence-transformers
+numpy
