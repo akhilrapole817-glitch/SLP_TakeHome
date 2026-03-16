@@ -8,5 +8,5 @@ requests
 httpx
 python-dotenv
 alembic
-sentence-transformers
+scikit-learn
 numpy
