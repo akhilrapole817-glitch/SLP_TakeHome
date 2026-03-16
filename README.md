@@ -58,6 +58,10 @@ This is a cleanly decoupled, three-tier architecture:
 
 ---
 
+## AI Tools Used
+
+I used AI sparingly for limited support during development, mainly to speed up a few early scaffolding and wording iterations. All final implementation, integration, logic, and project decisions were completed and reviewed by me.
+
 ## Running Locally
 
 ### Prerequisites
