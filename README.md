@@ -2,7 +2,7 @@
 
 #  Vehicle Defect Intelligence
 
-### A legal intelligence tool for automotive defect case evaluation — built for Strategic Legal Partners.
+### A legal intelligence tool for automotive defect case evaluation — built for Strategic Legal Practices.
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-akhil--slp--mvp.netlify.app-6366f1?style=for-the-badge&logo=netlify)](https://akhil-slp-mvp.netlify.app/)
 [![API Docs](https://img.shields.io/badge/API%20Docs-Swagger%20UI-009688?style=for-the-badge&logo=fastapi)](https://slp-backend-8u7k.onrender.com/docs)
@@ -160,5 +160,5 @@ Once complaint and recall data is cached to the DB, it doesn't automatically ref
 ---
 
 <div align="center">
-Built for Strategic Legal Partners · View live at <a href="https://akhil-slp-mvp.netlify.app/">akhil-slp-mvp.netlify.app</a>
+Built for Strategic Legal Practices · View live at <a href="https://akhil-slp-mvp.netlify.app/">akhil-slp-mvp.netlify.app</a>
 </div>
